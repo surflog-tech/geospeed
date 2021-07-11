@@ -34,8 +34,7 @@ function geospeed({ features }: SurflogFeatureCollection) {
 }
 
 function handler(geoBuffer: ArrayBuffer): SurflogResult {
-  const geoJSON = parseGeoBuffer(geoBuffer);
-  return geospeed(geoJSON);
+  return geospeed(parseGeoBuffer(geoBuffer));
 }
 
 export default handler;
