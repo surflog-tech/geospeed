@@ -1,0 +1,47 @@
+{
+  "name": "geospeed",
+  "version": "1.0.0",
+  "description": "GeoJSON speed",
+  "keywords": [
+    "GeoJSON",
+    "speed"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "geospeed": "lib/cli.js"
+  },
+  "license": "MIT",
+  "scripts": {
+    "compile": "tsc",
+    "test": "mocha",
+    "lint": "eslint --ext .ts src/*",
+    "predeploy": "npm run compile && npm version patch",
+    "deploy": "npm publish"
+  },
+  "files": [
+    "lib"
+  ],
+  "engines": {
+    "node": "16"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "1.0.1",
+    "@types/geojson": "7946.0.8",
+    "@types/mocha": "8.2.3",
+    "@types/node": "16.3.1",
+    "@typescript-eslint/eslint-plugin": "4.28.2",
+    "@typescript-eslint/parser": "4.28.2",
+    "eslint": "7.30.0",
+    "mocha": "9.0.2",
+    "ts-node": "10.1.0",
+    "typescript": "4.3.5"
+  },
+  "repository": "https://github.com/webjay/geospeed.git",
+  "author": "Jacob Friis Saxberg <jacob@webcom.dk>",
+  "dependencies": {
+    "@turf/helpers": "6.5.0",
+    "@turf/length": "6.5.0",
+    "@turf/simplify": "6.5.0"
+  }
+}
