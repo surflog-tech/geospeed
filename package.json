@@ -41,7 +41,6 @@
     "type": "git",
     "url": "git+https://github.com/webjay/geospeed.git"
   },
-  "author": "Jacob Friis Saxberg <jacob@webcom.dk>",
   "dependencies": {
     "@turf/helpers": "6.5.0",
     "@turf/length": "6.5.0"

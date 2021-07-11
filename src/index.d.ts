@@ -10,7 +10,6 @@ export type SurflogResult = {
 }
 
 type SurflogGeoJsonProperties = {
-  // [name: string]: any;
   coordTimes: string[];
 }
 
