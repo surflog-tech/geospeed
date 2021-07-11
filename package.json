@@ -37,11 +37,20 @@
     "ts-node": "10.1.0",
     "typescript": "4.3.5"
   },
-  "repository": "https://github.com/webjay/geospeed.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webjay/geospeed.git"
+  },
   "author": "Jacob Friis Saxberg <jacob@webcom.dk>",
   "dependencies": {
     "@turf/helpers": "6.5.0",
-    "@turf/length": "6.5.0",
-    "@turf/simplify": "6.5.0"
+    "@turf/length": "6.5.0"
+  },
+  "bugs": {
+    "url": "https://github.com/webjay/geospeed/issues"
+  },
+  "homepage": "https://github.com/webjay/geospeed#readme",
+  "directories": {
+    "lib": "lib"
   }
 }
