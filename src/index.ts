@@ -2,6 +2,8 @@ import { SurflogFeatureCollection, SurflogResult } from './index.d';
 import turfLength from '@turf/length';
 import { lineString as turfLineString } from '@turf/helpers';
 
+const legLengths = [250, 500];
+
 function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeatureCollection {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return JSON.parse(geoBuffer.toString());
@@ -14,23 +16,42 @@ function dateStrToHours(dateStr: string) {
 
 function geospeed({ features }: SurflogFeatureCollection) {
   const coords: number[][] = [];
+  const lengths: number[] = [0];
   const times: string[] = [];
-  let topspeed = 0;
   features.forEach(({ geometry: { coordinates }, properties: { coordTimes } }) => {
     coordinates.forEach(([lng, lat], indexC) => {
       coords.push([lng, lat]);
       times.push(coordTimes[indexC]);
-      if (coords.length > 1) {
-        const kmLast = turfLength(turfLineString(coords.slice(coords.length - 2)));
-        const timeLast = dateStrToHours(times[times.length - 1]) - dateStrToHours(times[times.length - 2]);
-        const speedLast = kmLast / timeLast;
-        if (speedLast > topspeed) topspeed = speedLast;
-      }
+      if (indexC === 0) return;
+      const lengthInKM = turfLength(turfLineString(coords.slice(coords.length - 2)));
+      lengths.push(lengthInKM * 1000);
     });
   });
-  return {
-    topspeed,
-  };
+
+  const result: SurflogResult = {
+    topspeed: 0,
+    topspeed250: 0,
+    topspeed500: 0
+  } as const;
+
+  lengths.forEach((_, indexStart) => {
+    lengths.slice(indexStart).reduce((lengthTotal, length, index) => {
+      if (index === 0) return 0;
+      const lengthSum = lengthTotal + length;
+      const time = dateStrToHours(times[indexStart + index]) - dateStrToHours(times[indexStart]);
+      const speed = lengthSum / 1000 / time;
+      if (speed > result.topspeed) result.topspeed = speed;
+      legLengths.forEach((legLength) => {
+        const key = `topspeed${legLength}`;
+        if (lengthTotal < legLength && lengthSum >= legLength) {
+          if (speed > result[key]) result[key] = speed;
+        }
+      });
+      return lengthSum;
+    }, 0);
+  });
+
+  return result;
 }
 
 function handler(geoBuffer: ArrayBuffer): SurflogResult {
