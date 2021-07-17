@@ -7,6 +7,7 @@ export type SurflogResult = {
   legs?: number; // number of rides forth and back
   jibespeed?: number; // fastest turn
   planing?: number; // Time planing in % (>18km/h)
+  [key: string]: number;
 }
 
 type SurflogGeoJsonProperties = {
