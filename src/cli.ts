@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 
+import { SurflogFeatureCollection } from './index.d';
 import { readFile } from 'fs/promises';
 import geoSpeed from './index';
 
+function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeatureCollection {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return JSON.parse(geoBuffer.toString());
+}
+
 function handler(filePath: string): Promise<void> {
-  return readFile(filePath).then(geoSpeed).then(console.log);
+  return readFile(filePath).then(parseGeoBuffer).then(geoSpeed).then(console.log);
 }
 
 const [,,geoFile] = process.argv;

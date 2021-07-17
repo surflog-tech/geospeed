@@ -5,11 +5,6 @@ import { lineString as turfLineString } from '@turf/helpers';
 export const kmToKnots = 1.852;
 const legLengths = [250, 500];
 
-function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeatureCollection {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return JSON.parse(geoBuffer.toString());
-}
-
 function dateStrToHours(dateStr: string) {
   const d = new Date(dateStr);
   return d.getTime() / 1000 / 60 / 60;
@@ -65,8 +60,8 @@ function convertKMtoKnots(resultInKM: SurflogResult): SurflogResult {
   return result;
 }
 
-function handler(geoBuffer: ArrayBuffer): SurflogResult {
-  return convertKMtoKnots(geospeed(parseGeoBuffer(geoBuffer)));
+function handler(geoData: SurflogFeatureCollection): SurflogResult {
+  return convertKMtoKnots(geospeed(geoData));
 }
 
 export default handler;

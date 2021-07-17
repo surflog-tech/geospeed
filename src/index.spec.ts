@@ -1,3 +1,4 @@
+import { SurflogFeatureCollection } from './index.d';
 import { readFileSync } from 'fs';
 import turfDestination from '@turf/destination';
 import {
@@ -8,6 +9,11 @@ import {
 import handler from './index';
 import { kmToKnots } from './index';
 import assert from 'assert/strict';
+
+function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeatureCollection {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return JSON.parse(geoBuffer.toString());
+}
 
 describe('GeoSpeed', () => {
 
@@ -20,15 +26,16 @@ describe('GeoSpeed', () => {
       coordTimes: ['2021-08-08T06:00:00.000Z', '2021-08-08T07:00:00.000Z']
     };
     const featureCollection = turfFeatureCollection([lineString]);
-    const buffer = Buffer.from(JSON.stringify(featureCollection));
-    const { topspeed } = handler(buffer);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const geoData: SurflogFeatureCollection = JSON.parse(JSON.stringify(featureCollection));
+    const { topspeed } = handler(geoData);
     assert.strictEqual(topspeed.toFixed(decimals), (1 / kmToKnots).toFixed(decimals));
   });
 
   it('should measure speed', () => {
     const geoFile = './assets/test.json';
     const geoBuffer: ArrayBuffer = readFileSync(geoFile);
-    const result = handler(geoBuffer);
+    const result = handler(parseGeoBuffer(geoBuffer));
     console.log(result);
   });
 
