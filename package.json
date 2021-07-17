@@ -14,7 +14,7 @@
   "scripts": {
     "compile": "tsc",
     "test": "mocha",
-    "lint": "eslint .",
+    "lint": "eslint src",
     "predeploy": "npm run compile && npm version patch",
     "deploy": "npm publish"
   },
