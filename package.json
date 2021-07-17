@@ -7,7 +7,6 @@
     "speed"
   ],
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "bin": {
     "geospeed": "lib/cli.js"
   },
@@ -15,9 +14,12 @@
   "scripts": {
     "compile": "tsc",
     "test": "mocha",
-    "lint": "eslint --ext .ts src/*",
+    "lint": "eslint .",
     "predeploy": "npm run compile && npm version patch",
     "deploy": "npm publish"
+  },
+  "directories": {
+    "lib": "lib"
   },
   "files": [
     "lib"
@@ -25,8 +27,13 @@
   "engines": {
     "node": "16"
   },
+  "dependencies": {
+    "@turf/helpers": "6.5.0",
+    "@turf/length": "6.5.0"
+  },
   "devDependencies": {
     "@tsconfig/node16": "1.0.1",
+    "@turf/destination": "6.5.0",
     "@types/geojson": "7946.0.8",
     "@types/mocha": "8.2.3",
     "@types/node": "16.3.3",
@@ -41,15 +48,8 @@
     "type": "git",
     "url": "git+https://github.com/webjay/geospeed.git"
   },
-  "dependencies": {
-    "@turf/helpers": "6.5.0",
-    "@turf/length": "6.5.0"
-  },
   "bugs": {
     "url": "https://github.com/webjay/geospeed/issues"
   },
-  "homepage": "https://github.com/webjay/geospeed#readme",
-  "directories": {
-    "lib": "lib"
-  }
+  "homepage": "https://github.com/webjay/geospeed#readme"
 }

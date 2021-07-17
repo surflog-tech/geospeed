@@ -2,6 +2,7 @@ import { SurflogFeatureCollection, SurflogResult } from './index.d';
 import turfLength from '@turf/length';
 import { lineString as turfLineString } from '@turf/helpers';
 
+export const kmToKnots = 1.852;
 const legLengths = [250, 500];
 
 function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeatureCollection {
@@ -27,13 +28,11 @@ function geospeed({ features }: SurflogFeatureCollection) {
       lengths.push(lengthInKM * 1000);
     });
   });
-
   const result: SurflogResult = {
     topspeed: 0,
     topspeed250: 0,
     topspeed500: 0
-  } as const;
-
+  };
   lengths.forEach((_, indexStart) => {
     lengths.slice(indexStart).reduce((lengthTotal, length, index) => {
       if (index === 0) return 0;
@@ -54,8 +53,20 @@ function geospeed({ features }: SurflogFeatureCollection) {
   return result;
 }
 
+function convertKMtoKnots(resultInKM: SurflogResult): SurflogResult {
+  const result: SurflogResult = {
+    topspeed: 0,
+    topspeed250: 0,
+    topspeed500: 0
+  };
+  for (const key in resultInKM) {
+    result[key] = resultInKM[key] / kmToKnots;
+  }
+  return result;
+}
+
 function handler(geoBuffer: ArrayBuffer): SurflogResult {
-  return geospeed(parseGeoBuffer(geoBuffer));
+  return convertKMtoKnots(geospeed(parseGeoBuffer(geoBuffer)));
 }
 
 export default handler;
