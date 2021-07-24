@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { build } = require('esbuild');
 
 const options = {
@@ -8,13 +9,15 @@ const options = {
   sourcemap: true,
 };
 
-build({
+void build({
   ...options,
   entryPoints: ['src/index.ts'],
 });
 
-build({
+void build({
   ...options,
   entryPoints: ['src/cli.ts'],
+  bundle: true,
+  external: ['@turf/distance'],
   platform: 'node',
 });
