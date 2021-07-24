@@ -10,6 +10,8 @@ import handler from './index';
 import { kmToKnots } from './index';
 import assert from 'assert/strict';
 
+// fit2geo ~/Downloads/7147163106.fit > assets/test2.json
+
 function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeature {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return JSON.parse(geoBuffer.toString());
@@ -32,7 +34,7 @@ describe('GeoSpeed', () => {
     assert.strictEqual(topspeed.toFixed(decimals), (1 / kmToKnots).toFixed(decimals));
   });
 
-  xit('should measure speed', () => {
+  it('should measure speed', function() {
     const geoFile = './assets/test.json';
     const geoBuffer: ArrayBuffer = readFileSync(geoFile);
     const result = handler(parseGeoBuffer(geoBuffer));
@@ -40,8 +42,7 @@ describe('GeoSpeed', () => {
   });
 
   it('should measure speed', function() {
-    // this.timeout(20000);
-    const geoFile = './assets/test.json';
+    const geoFile = './assets/test2.json';
     const geoBuffer: ArrayBuffer = readFileSync(geoFile);
     const result = handler(parseGeoBuffer(geoBuffer));
     console.log(result);
