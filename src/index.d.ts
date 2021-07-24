@@ -1,4 +1,4 @@
-import { FeatureCollection, Feature, LineString } from 'geojson';
+import { Feature, MultiLineString } from 'geojson';
 
 export type SurflogResult = {
   topspeed: number; // fastest speed
@@ -11,10 +11,14 @@ export type SurflogResult = {
 }
 
 type SurflogGeoJsonProperties = {
-  coordTimes: string[];
+  coordsMeta: [{
+    time: number;
+    speed: number;
+    distance: number;
+  }];
 }
 
-export interface SurflogFeatureCollection extends FeatureCollection {
-  type: "FeatureCollection";
-  features: Array<Feature<LineString, SurflogGeoJsonProperties>>;
+export interface SurflogFeature extends Feature {
+  properties: SurflogGeoJsonProperties;
+  geometry: MultiLineString;
 }

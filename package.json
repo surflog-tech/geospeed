@@ -28,15 +28,15 @@
     "node": "16"
   },
   "dependencies": {
-    "@turf/helpers": "6.5.0",
-    "@turf/length": "6.5.0"
+    "@turf/distance": "6.5.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "1.0.2",
     "@turf/destination": "6.5.0",
+    "@turf/helpers": "6.5.0",
     "@types/geojson": "7946.0.8",
-    "@types/mocha": "8.2.3",
-    "@types/node": "16.4.0",
+    "@types/mocha": "9.0.0",
+    "@types/node": "16.4.1",
     "@typescript-eslint/eslint-plugin": "4.28.4",
     "@typescript-eslint/parser": "4.28.4",
     "eslint": "7.31.0",
