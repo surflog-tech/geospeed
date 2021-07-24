@@ -20,4 +20,5 @@ void build({
   bundle: true,
   external: ['@turf/distance'],
   platform: 'node',
+  format: 'cjs',
 });
