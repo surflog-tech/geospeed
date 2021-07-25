@@ -1,5 +1,5 @@
 import { SurflogFeature, SurflogResult } from './index.d';
-import turfDistance from '@turf/distance';
+// import turfDistance from '@turf/distance';
 
 export const kmToKnots = 1.852;
 const legLengths = [250, 500];
@@ -17,26 +17,24 @@ function geospeed(geoJSON: SurflogFeature) {
   let indexCoordsMeta = 0;
   const { geometry: { coordinates: coordinatesMultiLine }, properties: { coordsMeta } } = geoJSON;
   coordinatesMultiLine.forEach((coordinatesLine) => {
-    const coords: number[][] = [];
-    const lengths: number[] = [0];
+    const distances: number[] = [0];
     const times: number[] = [];
-    coordinatesLine.forEach(([lng, lat], indexCoord) => {
-      coords.push([lng, lat]);
-      const { time } = coordsMeta[indexCoordsMeta];
-      indexCoordsMeta += 1;
+    coordinatesLine.forEach((_, indexCoord) => {
+      const { time, speed, distance: distanceNow } = coordsMeta[indexCoordsMeta];
+      if (speed > result.topspeed) result.topspeed = speed;
       times.push(time);
+      indexCoordsMeta += 1;
       if (indexCoord === 0) return;
-      lengths.push(turfDistance(coords[indexCoord - 1], coords[indexCoord]));
+      const { distance: distancePrev } = coordsMeta[indexCoordsMeta - 2];
+      const distance = distanceNow - distancePrev;
+      distances.push(distance);
     });
-    lengths.forEach((_, indexStart) => {
-      lengths.slice(indexStart).reduce((lengthTotal, length, index) => {
+    distances.forEach((_, indexStart) => {
+      distances.slice(indexStart).reduce((lengthTotal, length, index) => {
         if (index === 0) return 0;
         const lengthSum = lengthTotal + length;
         const time = timestampToHours(times[indexStart + index] - times[indexStart]);
         const speed = lengthSum / time;
-        if (speed > result.topspeed) {
-          result.topspeed = speed;
-        }
         legLengths.forEach((legLength) => {
           const legLengthInKM = legLength / 1000;
           const key = `topspeed${legLength}`;
