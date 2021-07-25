@@ -1,21 +1,46 @@
 import { SurflogFeature } from './index.d';
 import { readFileSync } from 'fs';
+import turfDistance from '@turf/distance';
 import turfDestination from '@turf/destination';
 import {
   point as turfPoint,
   lineString as turfLineString,
   featureCollection as turfFeatureCollection
 } from '@turf/helpers';
+import { coordEach as turfCoordEach } from '@turf/meta';
+import parseGeoBuffer from './parse';
 import handler from './index';
 import { kmToKnots } from './index';
 import assert from 'assert/strict';
 
+function readFile(filePath: string) {
+  return parseGeoBuffer(readFileSync(filePath));
+}
+
 // fit2geo ~/Downloads/7147163106.fit > assets/test2.json
 
-function parseGeoBuffer(geoBuffer: ArrayBuffer): SurflogFeature {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return JSON.parse(geoBuffer.toString());
-}
+describe('GeoJSON validation', () => {
+
+  xit('should validate distance', () => {
+    const geoFile = './assets/test2.json';
+    const geoJSON = readFile(geoFile);
+    const { properties: { coordsMeta } } = geoJSON;
+    let coordPrev = [0, 0];
+    turfCoordEach(geoJSON, ([lng, lat], coordIndex) => {
+      if (coordIndex > 0) {
+        const { distance: distanceNow } = coordsMeta[coordIndex];
+        const { distance: distancePrev } = coordsMeta[coordIndex - 1];
+        const distance = distanceNow - distancePrev;
+        const distanceCalc = turfDistance(coordPrev, [lng, lat]);
+        const distDiff = Math.abs(distanceCalc - distance) * 1000;
+        if (distDiff > 1) console.log(distDiff);
+      }
+      coordPrev = [lng, lat];
+      // assert.ok(distance);
+    });
+  });
+
+});
 
 describe('GeoSpeed', () => {
 
@@ -34,17 +59,19 @@ describe('GeoSpeed', () => {
     assert.strictEqual(topspeed.toFixed(decimals), (1 / kmToKnots).toFixed(decimals));
   });
 
-  it('should measure speed', function() {
-    const geoFile = './assets/test.json';
-    const geoBuffer: ArrayBuffer = readFileSync(geoFile);
-    const result = handler(parseGeoBuffer(geoBuffer));
-    console.log(result);
+  xit('should find multiple LineStrings', function() {
+    const geoFile = './assets/test2.json';
+    const result = readFile(geoFile);
+    if (result.type !== 'Feature' || result.geometry.type !== 'MultiLineString') return assert.fail();
+    const { geometry: { coordinates } } = result;
+    assert.strictEqual(coordinates.length, 4);
   });
 
-  it('should measure speed', function() {
+  it('should measure speed', () => {
+    console.time();
     const geoFile = './assets/test2.json';
-    const geoBuffer: ArrayBuffer = readFileSync(geoFile);
-    const result = handler(parseGeoBuffer(geoBuffer));
+    const result = handler(readFile(geoFile));
+    console.timeEnd();
     console.log(result);
   });
 
