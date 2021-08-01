@@ -11,7 +11,7 @@ import { coordEach as turfCoordEach } from '@turf/meta';
 import parseGeoBuffer from './parse';
 import handler from './index';
 import { kmToKnots } from './index';
-import assert from 'assert/strict';
+import assert from 'assert';
 
 function readFile(filePath: string) {
   return parseGeoBuffer(readFileSync(filePath));
@@ -59,17 +59,9 @@ describe('GeoSpeed', () => {
     assert.strictEqual(topspeed.toFixed(decimals), (1 / kmToKnots).toFixed(decimals));
   });
 
-  xit('should find multiple LineStrings', function() {
-    const geoFile = './assets/test2.json';
-    const result = readFile(geoFile);
-    if (result.type !== 'Feature' || result.geometry.type !== 'MultiLineString') return assert.fail();
-    const { geometry: { coordinates } } = result;
-    assert.strictEqual(coordinates.length, 4);
-  });
-
   it('should measure speed', () => {
     console.time();
-    const geoFile = './assets/test2.json';
+    const geoFile = './assets/test.json';
     const result = handler(readFile(geoFile));
     console.timeEnd();
     console.log(result);
