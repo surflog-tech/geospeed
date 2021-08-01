@@ -2,8 +2,9 @@ import { Feature, MultiLineString } from 'geojson';
 
 export type SurflogResult = {
   topspeed: number; // fastest speed
-  topspeed250?: number; // fastest speed over 250 meter
-  topspeed500?: number; // fastest speed over 500 meter
+  topspeedGPS: number; // fastest speed measured
+  topspeed250?: number; // fastest speed measured over 250 meter
+  topspeed500?: number; // fastest speed measured over 500 meter
   legs?: number; // number of rides forth and back
   jibespeed?: number; // fastest turn
   planing?: number; // Time planing in % (>18km/h)
@@ -13,6 +14,7 @@ export type SurflogResult = {
 type SurflogGeoJsonProperties = {
   coordsMeta: [{
     time: number;
+    timestamp: string;
     speed: number;
     distance: number;
   }];

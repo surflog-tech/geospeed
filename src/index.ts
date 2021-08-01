@@ -1,5 +1,5 @@
 import { SurflogFeature, SurflogResult } from './index.d';
-// import turfDistance from '@turf/distance';
+import turfDistance from '@turf/distance';
 
 export const kmToKnots = 1.852;
 const legLengths = [250, 500];
@@ -11,6 +11,7 @@ function timestampToHours(ts: number) {
 function geospeed(geoJSON: SurflogFeature) {
   const result: SurflogResult = {
     topspeed: 0,
+    topspeedGPS: 0,
     topspeed250: 0,
     topspeed500: 0
   };
@@ -19,15 +20,18 @@ function geospeed(geoJSON: SurflogFeature) {
   coordinatesMultiLine.forEach((coordinatesLine) => {
     const distances: number[] = [0];
     const times: number[] = [];
-    coordinatesLine.forEach((_, indexCoord) => {
-      const { time, speed, distance: distanceNow } = coordsMeta[indexCoordsMeta];
-      if (speed > result.topspeed) result.topspeed = speed;
+    coordinatesLine.forEach(([lng1, lat1], indexCoord) => {
+      const { time, speed } = coordsMeta[indexCoordsMeta];
       times.push(time);
+      if (speed > result.topspeed) result.topspeed = speed;
       indexCoordsMeta += 1;
       if (indexCoord === 0) return;
-      const { distance: distancePrev } = coordsMeta[indexCoordsMeta - 2];
-      const distance = distanceNow - distancePrev;
+      const [lng2, lat2] = coordinatesLine[indexCoord - 1];
+      const timeDiff = timestampToHours(times[indexCoord] - times[indexCoord - 1]);
+      const distance = turfDistance([lng2, lat2], [lng1, lat1]);
       distances.push(distance);
+      const topspeedGPS = distance / timeDiff;
+      if (topspeedGPS > result.topspeedGPS) result.topspeedGPS = topspeedGPS;
     });
     distances.forEach((_, indexStart) => {
       distances.slice(indexStart).reduce((lengthTotal, length, index) => {
@@ -50,7 +54,7 @@ function geospeed(geoJSON: SurflogFeature) {
 }
 
 function convertKMtoKnots(resultInKM: SurflogResult): SurflogResult {
-  const result: SurflogResult = { topspeed: 0 };
+  const result: SurflogResult = { topspeed: 0, topspeedGPS: 0 };
   for (const [key, value] of Object.entries(resultInKM)) {
     result[key] = value / kmToKnots;
   }
