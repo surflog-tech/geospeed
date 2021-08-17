@@ -5,7 +5,7 @@ type List = {
   [key: string]: number;
 }
 
-const threshold = 5;
+const threshold = 3.5;
 
 function filterOutliers(data: List[], key: string): List[] {
   // const dataSorted = [...data].sort(({ [key]: a }, { [key]: b }) => a - b);
