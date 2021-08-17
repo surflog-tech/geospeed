@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { build } = require('esbuild');
+const { buildSync } = require('esbuild');
 
 const options = {
   outdir: 'lib',
@@ -9,16 +9,18 @@ const options = {
   sourcemap: true,
 };
 
-void build({
+void buildSync({
   ...options,
+  // format: 'esm',
+  format: 'cjs',
   entryPoints: ['src/index.ts'],
 });
 
-void build({
+void buildSync({
   ...options,
   entryPoints: ['src/cli.ts'],
   bundle: true,
   external: ['@turf/distance'],
   platform: 'node',
-  format: 'cjs',
+  // format: 'cjs',
 });
