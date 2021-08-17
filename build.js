@@ -11,8 +11,7 @@ const options = {
 
 void buildSync({
   ...options,
-  // format: 'esm',
-  format: 'cjs',
+  format: 'esm',
   entryPoints: ['src/index.ts'],
 });
 
