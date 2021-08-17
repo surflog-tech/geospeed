@@ -3,9 +3,9 @@ const { build } = require('esbuild');
 
 const options = {
   outdir: 'lib',
-  // bundle: true,
-  // external: ['@turf/distance'],
-  minify: true,
+  bundle: true,
+  external: ['@turf/distance'],
+  // minify: true,
   sourcemap: true,
 };
 
