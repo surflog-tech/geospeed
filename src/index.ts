@@ -1,5 +1,11 @@
 import { SurflogFeature, SurflogResult } from './index.d';
 import turfDistance from '@turf/distance';
+import { filterOutliers } from './outliers';
+
+type Record = {
+  time: number;
+  distance: number;
+}
 
 export const kmToKnots = 1.852;
 const legLengths = [250, 500];
@@ -18,27 +24,31 @@ function geospeed(geoJSON: SurflogFeature) {
   let indexCoordsMeta = 0;
   const { geometry: { coordinates: coordinatesMultiLine }, properties: { coordsMeta } } = geoJSON;
   coordinatesMultiLine.forEach((coordinatesLine) => {
-    const distances: number[] = [0];
-    const times: number[] = [];
+    const records: Record[] = [];
     coordinatesLine.forEach(([lng1, lat1], indexCoord) => {
       const { time, speed } = coordsMeta[indexCoordsMeta];
-      times.push(time);
       if (speed > result.topspeed) result.topspeed = speed;
       indexCoordsMeta += 1;
-      if (indexCoord === 0) return;
+      if (indexCoord === 0) {
+        records.push({ time, distance: 0 });
+        return;
+      }
       const [lng2, lat2] = coordinatesLine[indexCoord - 1];
-      const timeDiff = timestampToHours(times[indexCoord] - times[indexCoord - 1]);
       const distance = turfDistance([lng2, lat2], [lng1, lat1]);
-      distances.push(distance);
-      const topspeedGPS = distance / timeDiff;
-      if (topspeedGPS > result.topspeedGPS) result.topspeedGPS = topspeedGPS;
+      records.push({ time, distance });
     });
-    distances.forEach((_, indexStart) => {
-      distances.slice(indexStart).reduce((lengthTotal, length, index) => {
+    const recordsFiltered = filterOutliers(filterOutliers(records, 'distance'), 'time');
+    recordsFiltered.forEach((_, indexStart) => {
+      if (indexStart > 0) {
+        const timeDiff = timestampToHours(recordsFiltered[indexStart].time - recordsFiltered[indexStart - 1].time);
+        const topspeedGPS = recordsFiltered[indexStart].distance / timeDiff;
+        if (topspeedGPS > result.topspeedGPS) result.topspeedGPS = topspeedGPS;
+      }
+      recordsFiltered.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
         if (index === 0) return 0;
-        const lengthSum = lengthTotal + length;
-        const time = timestampToHours(times[indexStart + index] - times[indexStart]);
-        const speed = lengthSum / time;
+        const lengthSum = lengthTotal + distance;
+        const timeDiff = timestampToHours(recordsFiltered[indexStart + index].time - recordsFiltered[indexStart].time);
+        const speed = lengthSum / timeDiff;
         legLengths.forEach((legLength) => {
           const legLengthInKM = legLength / 1000;
           const key = `topspeed${legLength}`;
