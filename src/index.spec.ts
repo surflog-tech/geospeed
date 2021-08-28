@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { SurflogFeature } from './index.d';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import turfDistance from '@turf/distance';
 import turfDestination from '@turf/destination';
 import {
@@ -8,7 +8,7 @@ import {
   lineString as turfLineString,
   featureCollection as turfFeatureCollection
 } from '@turf/helpers';
-import { coordEach as turfCoordEach } from '@turf/meta';
+import { coordEach as turfCoordEach, coordAll as turfCoordAll } from '@turf/meta';
 import parseGeoBuffer from './parse';
 import handler from './index';
 import { kmToKnots } from './index';
@@ -88,6 +88,29 @@ describe('GeoSpeed', () => {
     console.timeEnd();
     assert.strictEqual(result.length, 11);
     console.log(result);
+  });
+
+  xit('create jibe', () => {
+    const geoFile = './assets/8c88332c-ff17-5a24-b3f1-ef1cde0cc4e7.json';
+    const indexStart = 2414;
+    const indexEnd = 2435;
+    const geoJSON = readFile(geoFile);
+    const { properties: { coordsMeta } } = geoJSON;
+    const coordinates = turfCoordAll(geoJSON);
+    coordinates.splice(0, indexStart);
+    coordinates.splice(indexEnd - indexStart);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    geoJSON.geometry.coordinates = coordinates;
+    coordsMeta.splice(0, indexStart);
+    coordsMeta.splice(indexEnd - indexStart);
+    writeFileSync('./assets/jibe.json', JSON.stringify(geoJSON));
+    console.log(geoJSON);
+    // turfCoordEach(geoJSON, ([lng, lat], coordIndex) => {
+    //   const meta = coordsMeta[coordIndex];
+    //   if (meta.timestamp === '2021-08-19T14:31:40.000Z') console.log(coordIndex);
+    //   if (meta.timestamp === '2021-08-19T14:31:51.000Z') console.log(coordIndex);
+    // });
   });
 
 });
