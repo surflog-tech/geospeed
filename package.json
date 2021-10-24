@@ -27,10 +27,8 @@
   "engines": {
     "node": ">=14"
   },
-  "dependencies": {
-    "@turf/distance": "6.5.0"
-  },
   "devDependencies": {
+    "@turf/distance": "6.5.0",
     "@tsconfig/node16": "1.0.2",
     "@turf/destination": "6.5.0",
     "@turf/helpers": "6.5.0",
