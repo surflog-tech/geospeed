@@ -4,13 +4,14 @@ const { buildSync } = require('esbuild');
 const options = {
   outdir: 'lib',
   bundle: true,
-  // external: ['@turf/distance'],
+  external: ['@turf/distance'],
   minify: true,
   sourcemap: true,
 };
 
 void buildSync({
   ...options,
+  format: 'esm',
   entryPoints: ['src/index.ts'],
 });
 
