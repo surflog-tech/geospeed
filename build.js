@@ -5,15 +5,13 @@ const options = {
   outdir: 'lib',
   bundle: true,
   // external: ['@turf/distance'],
-  minify: true,
+  // minify: true,
   sourcemap: true,
-  splitting: true,
-  format: 'esm',
-  target: ['esnext']
 };
 
 void buildSync({
   ...options,
+  platform: 'node',
   entryPoints: ['src/index.ts'],
 });
 

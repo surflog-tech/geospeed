@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
+    "emitDeclarationOnly": true,
     "declaration": true,
     "target": "esnext",
     "lib": ["esnext", "dom"],

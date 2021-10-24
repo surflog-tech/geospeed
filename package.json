@@ -16,15 +16,15 @@
   "scripts": {
     "lint": "eslint src",
     "test": "mocha",
-    "ts-types": "tsc --emitDeclarationOnly --outDir lib",
+    "ts-types": "tsc",
     "build": "rm -f lib/* && node build.js",
     "predeploy": "npm run build && npm run ts-types && npm version patch",
     "deploy": "npm publish"
   },
   "devDependencies": {
-    "@turf/distance": "6.5.0",
     "@tsconfig/node14": "1.0.1",
     "@turf/destination": "6.5.0",
+    "@turf/distance": "6.5.0",
     "@turf/helpers": "6.5.0",
     "@turf/meta": "6.5.0",
     "@types/geojson": "7946.0.8",
