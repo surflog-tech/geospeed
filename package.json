@@ -21,10 +21,8 @@
     "predeploy": "npm run build && npm run ts-types && npm version patch",
     "deploy": "npm publish"
   },
-  "dependencies": {
-    "@turf/distance": "6.5.0"
-  },
   "devDependencies": {
+    "@turf/distance": "6.5.0",
     "@tsconfig/node14": "1.0.1",
     "@turf/destination": "6.5.0",
     "@turf/helpers": "6.5.0",
