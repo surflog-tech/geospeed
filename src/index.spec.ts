@@ -12,7 +12,6 @@ import { coordEach as turfCoordEach, coordAll as turfCoordAll } from '@turf/meta
 import parseGeoBuffer from './parse';
 import handler from './index';
 import { kmToKnots } from './index';
-import { filterOutliers } from './outliers';
 
 function readFile(filePath: string) {
   return parseGeoBuffer(readFileSync(filePath));
@@ -65,28 +64,6 @@ describe('GeoSpeed', () => {
     const geoFile = './assets/test.json';
     const result = handler(readFile(geoFile));
     console.timeEnd();
-    console.log(result);
-  });
-
-  xit('should test filterOutliers', () => {
-    console.time();
-    const data = [
-      { test: 1 },
-      { test: 2 },
-      { test: 3 },
-      { test: 4 },
-      { test: 4 },
-      { test: 4 },
-      { test: 3 },
-      { test: 2 },
-      { test: 1 },
-      { test: 1 },
-      { test: 10 },
-      { test: 15 },
-    ];
-    const result = filterOutliers(data, 'test');
-    console.timeEnd();
-    assert.strictEqual(result.length, 11);
     console.log(result);
   });
 

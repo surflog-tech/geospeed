@@ -1,6 +1,5 @@
 import { SurflogFeature, SurflogResult } from './index.d';
 import turfDistance from '@turf/distance';
-import { filterOutliers } from './outliers';
 
 type Record = {
   time: number;
@@ -37,17 +36,16 @@ function geospeed(geoJSON: SurflogFeature) {
       const distance = turfDistance([lng2, lat2], [lng1, lat1]);
       records.push({ time, distance });
     });
-    const recordsFiltered = filterOutliers(filterOutliers(records, 'distance'), 'time');
-    recordsFiltered.forEach((_, indexStart) => {
+    records.forEach((_, indexStart) => {
       if (indexStart > 0) {
-        const timeDiff = timestampToHours(recordsFiltered[indexStart].time - recordsFiltered[indexStart - 1].time);
-        const topspeedGPS = recordsFiltered[indexStart].distance / timeDiff;
+        const timeDiff = timestampToHours(records[indexStart].time - records[indexStart - 1].time);
+        const topspeedGPS = records[indexStart].distance / timeDiff;
         if (topspeedGPS > result.topspeedGPS) result.topspeedGPS = topspeedGPS;
       }
-      recordsFiltered.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
+      records.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
         if (index === 0) return 0;
         const lengthSum = lengthTotal + distance;
-        const timeDiff = timestampToHours(recordsFiltered[indexStart + index].time - recordsFiltered[indexStart].time);
+        const timeDiff = timestampToHours(records[indexStart + index].time - records[indexStart].time);
         const speed = lengthSum / timeDiff;
         legLengths.forEach((legLength) => {
           const legLengthInKM = legLength / 1000;
