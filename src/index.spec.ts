@@ -28,8 +28,8 @@ describe('GeoJSON validation', () => {
     let coordPrev = [0, 0];
     turfCoordEach(geoJSON, ([lng, lat], coordIndex) => {
       if (coordIndex > 0) {
-        const { distance: distanceNow } = coordsMeta[coordIndex];
-        const { distance: distancePrev } = coordsMeta[coordIndex - 1];
+        const { distance: distanceNow } = coordsMeta[coordIndex];
+        const { distance: distancePrev } = coordsMeta[coordIndex - 1];
         const distance = distanceNow - distancePrev;
         const distanceCalc = turfDistance(coordPrev, [lng, lat]);
         const distDiff = Math.abs(distanceCalc - distance) * 1000;
