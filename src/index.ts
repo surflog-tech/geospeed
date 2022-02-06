@@ -39,8 +39,8 @@ function geospeed(geoJSON: SurflogFeature) {
     records.forEach((_, indexStart) => {
       if (indexStart > 0) {
         const timeDiff = timestampToHours(records[indexStart].time - records[indexStart - 1].time);
-        const topspeedGPS = records[indexStart].distance / timeDiff;
-        if (topspeedGPS > result.topspeedGPS) result.topspeedGPS = topspeedGPS;
+        const speed = records[indexStart].distance / timeDiff;
+        if (speed > result.topspeedGPS) result.topspeedGPS = speed;
       }
       records.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
         if (index === 0) return 0;
