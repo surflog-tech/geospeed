@@ -9,6 +9,7 @@ import {
   featureCollection as turfFeatureCollection
 } from '@turf/helpers';
 import { coordEach as turfCoordEach, coordAll as turfCoordAll } from '@turf/meta';
+import turfBearing from '@turf/bearing';
 import parseGeoBuffer from './parse';
 import handler from './index';
 import { kmToKnots } from './index';
@@ -88,6 +89,46 @@ describe('GeoSpeed', () => {
     //   if (meta.timestamp === '2021-08-19T14:31:40.000Z') console.log(coordIndex);
     //   if (meta.timestamp === '2021-08-19T14:31:51.000Z') console.log(coordIndex);
     // });
+  });
+
+});
+
+xdescribe('GeoJSON jibe', () => {
+
+  it('should measure jibe', () => {
+    const lookback = 5;
+    const bearingIsJibe = 45;
+    const geoFile = './assets/jibe.json';
+    const geoJSON = readFile(geoFile);
+    let coordPrev = [0, 0];
+    let distSum = 0;
+    const log: {
+      bearing: number;
+      bearingSum: number;
+      bearingAverage: number;
+      distSum: number;
+    }[] = [];
+    let bearingSum = 0;
+    turfCoordEach(geoJSON, ([lng, lat], coordIndex) => {
+      if (coordIndex > 0) {
+        const bearing = Math.round(turfBearing(coordPrev, [lng, lat]));
+        bearingSum += bearing;
+        const bearingAverage = Math.round(bearingSum / coordIndex);
+        // console.log(bearing);
+        const distance = turfDistance(coordPrev, [lng, lat]);
+        distSum += distance * 1000;
+        // console.log(distanceCalc);
+        if (coordIndex >= lookback) {
+          const bearingLookback = log[coordIndex - lookback].bearing;
+          const bearingDiff = Math.abs(bearingLookback - bearing);
+          if (bearingDiff > bearingIsJibe) console.log({ bearingDiff, coordIndex });
+          // console.log({ bearingLookback, bearing, bearingDiff });
+        }
+        log.push({ bearing, bearingSum, bearingAverage, distSum });
+      }
+      coordPrev = [lng, lat];
+    });
+    // console.log(log);
   });
 
 });
