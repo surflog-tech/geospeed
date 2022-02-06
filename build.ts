@@ -1,21 +1,19 @@
-import { buildSync }  from 'esbuild';
+import { buildSync, BuildOptions }  from 'esbuild';
 
 const options = {
   outdir: 'lib',
   bundle: true,
-  // external: ['@turf/distance'],
-  // minify: true,
+  platform: 'node',
+  minify: true,
   sourcemap: true,
-};
+} as BuildOptions;
 
 void buildSync({
   ...options,
-  platform: 'node',
   entryPoints: ['src/index.ts'],
 });
 
 void buildSync({
   ...options,
-  platform: 'node',
   entryPoints: ['src/cli.ts'],
 });
