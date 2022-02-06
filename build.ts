@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { buildSync } = require('esbuild');
+import { buildSync }  from 'esbuild';
 
 const options = {
   outdir: 'lib',
