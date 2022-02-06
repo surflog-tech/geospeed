@@ -1,18 +1,18 @@
-import assert from 'assert';
-import { SurflogFeature } from './index.d';
+// import assert from 'assert';
+// import { SurflogFeature } from './index.d';
 import { readFileSync, writeFileSync } from 'fs';
 import turfDistance from '@turf/distance';
-import turfDestination from '@turf/destination';
-import {
-  point as turfPoint,
-  lineString as turfLineString,
-  featureCollection as turfFeatureCollection
-} from '@turf/helpers';
+// import turfDestination from '@turf/destination';
+// import {
+//   point as turfPoint,
+//   lineString as turfLineString,
+//   featureCollection as turfFeatureCollection
+// } from '@turf/helpers';
 import { coordEach as turfCoordEach, coordAll as turfCoordAll } from '@turf/meta';
 import turfBearing from '@turf/bearing';
 import parseGeoBuffer from './parse';
 import handler from './index';
-import { kmToKnots } from './index';
+// import { kmToKnots } from './index';
 
 function readFile(filePath: string) {
   return parseGeoBuffer(readFileSync(filePath));
@@ -45,24 +45,24 @@ describe('GeoJSON validation', () => {
 
 describe('GeoSpeed', () => {
 
-  xit('should measure 1km', () => {
-    const decimals = 10;
-    const start = [-73.97665500640869, 40.778307278822645];
-    const { geometry: { coordinates: destination } } = turfDestination(turfPoint(start), 1, 0);
-    const lineString = turfLineString([start, destination]);
-    lineString.properties = {
-      coordTimes: ['2021-08-08T06:00:00.000Z', '2021-08-08T07:00:00.000Z']
-    };
-    const featureCollection = turfFeatureCollection([lineString]);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const geoData: SurflogFeature = JSON.parse(JSON.stringify(featureCollection));
-    const { topspeed } = handler(geoData);
-    assert.strictEqual(topspeed.toFixed(decimals), (1 / kmToKnots).toFixed(decimals));
-  });
+  // xit('should measure 1km', () => {
+  //   const decimals = 10;
+  //   const start = [-73.97665500640869, 40.778307278822645];
+  //   const { geometry: { coordinates: destination } } = turfDestination(turfPoint(start), 1, 0);
+  //   const lineString = turfLineString([start, destination]);
+  //   lineString.properties = {
+  //     coordTimes: ['2021-08-08T06:00:00.000Z', '2021-08-08T07:00:00.000Z']
+  //   };
+  //   const featureCollection = turfFeatureCollection([lineString]);
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //   const geoData: SurflogFeature = JSON.parse(JSON.stringify(featureCollection));
+  //   const { topspeed } = handler(geoData);
+  //   assert.strictEqual(topspeed.toFixed(decimals), (1 / kmToKnots).toFixed(decimals));
+  // });
 
   it('should measure speed', () => {
     console.time();
-    const geoFile = './assets/test.json';
+    const geoFile = './assets/test3.json';
     const result = handler(readFile(geoFile));
     console.timeEnd();
     console.log(result);
@@ -93,12 +93,13 @@ describe('GeoSpeed', () => {
 
 });
 
-xdescribe('GeoJSON jibe', () => {
+describe('GeoJSON jibe', () => {
 
   it('should measure jibe', () => {
     const lookback = 5;
     const bearingIsJibe = 45;
     const geoFile = './assets/jibe.json';
+    // const geoFile = './assets/test3.json';
     const geoJSON = readFile(geoFile);
     let coordPrev = [0, 0];
     let distSum = 0;

@@ -6,7 +6,6 @@ type Record = {
   distance: number;
 }
 
-export const kmToKnots = 1.852;
 const legLengths = [250, 500];
 
 function timestampToHours(ts: number) {
@@ -61,16 +60,8 @@ function geospeed(geoJSON: SurflogFeature) {
   return result;
 }
 
-function convertKMtoKnots(resultInKM: SurflogResult): SurflogResult {
-  const result: SurflogResult = { topspeed: 0, topspeedGPS: 0 };
-  for (const [key, value] of Object.entries(resultInKM)) {
-    result[key] = value / kmToKnots;
-  }
-  return result;
-}
-
 function handler(geoJSON: SurflogFeature): SurflogResult {
-  return convertKMtoKnots(geospeed(geoJSON));
+  return geospeed(geoJSON);
 }
 
 export default handler;
