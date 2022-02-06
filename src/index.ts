@@ -25,7 +25,7 @@ function geospeed(geoJSON: SurflogFeature) {
   coordinatesMultiLine.forEach((coordinatesLine) => {
     const records: Record[] = [];
     coordinatesLine.forEach(([lng1, lat1], indexCoord) => {
-      const { time, speed } = coordsMeta[indexCoordsMeta];
+      const { time, speed } = coordsMeta[indexCoordsMeta];
       if (speed > result.topspeed) result.topspeed = speed;
       indexCoordsMeta += 1;
       if (indexCoord === 0) {
