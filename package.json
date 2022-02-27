@@ -1,6 +1,6 @@
 {
   "name": "@surflog/geospeed",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "GeoJSON speed",
   "keywords": [
     "GeoJSON",
@@ -16,21 +16,17 @@
   "scripts": {
     "lint": "eslint src",
     "test": "mocha",
-    "ts-types": "tsc",
-    "build": "rm -f lib/* && ts-node build.ts",
+    "prebuild": "rm -f lib/*",
+    "build": "ts-node build.ts",
     "predeploy": "npm run build && npm run ts-types && npm version patch",
     "deploy": "npm publish"
   },
   "devDependencies": {
     "@tsconfig/node14": "1.0.1",
-    "@turf/bearing": "6.5.0",
-    "@turf/destination": "6.5.0",
     "@turf/distance": "6.5.0",
-    "@turf/helpers": "6.5.0",
     "@turf/meta": "6.5.0",
     "@types/geojson": "7946.0.8",
     "@types/mocha": "9.1.0",
-    "@types/node": "17.0.21",
     "@typescript-eslint/eslint-plugin": "5.12.1",
     "@typescript-eslint/parser": "5.12.1",
     "esbuild": "0.14.23",

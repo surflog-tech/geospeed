@@ -1,8 +1,10 @@
-import { SurflogFeature, SurflogResult } from './index.d';
+import { FeatureCollection, LineString } from 'geojson';
+import { GeospeedFeatureCollection, GeospeedProperties, SurflogFeatureProperty } from './index.d';
+import { featureEach } from '@turf/meta';
 import turfDistance from '@turf/distance';
 
 type Record = {
-  time: number;
+  timestamp: number;
   distance: number;
 }
 
@@ -12,56 +14,53 @@ function timestampToHours(ts: number) {
   return ts / 1000 / 60 / 60;
 }
 
-function geospeed(geoJSON: SurflogFeature) {
-  const result: SurflogResult = {
+function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>) {
+  const geospeedProperties: GeospeedProperties = {
     topspeed: 0,
     topspeedGPS: 0,
     topspeed250: 0,
     topspeed500: 0
   };
-  let indexCoordsMeta = 0;
-  const { geometry: { coordinates: coordinatesMultiLine }, properties: { coordsMeta } } = geoJSON;
-  coordinatesMultiLine.forEach((coordinatesLine) => {
-    const records: Record[] = [];
-    coordinatesLine.forEach(([lng1, lat1], indexCoord) => {
-      const { time, speed } = coordsMeta[indexCoordsMeta];
-      if (speed > result.topspeed) result.topspeed = speed;
-      indexCoordsMeta += 1;
-      if (indexCoord === 0) {
-        records.push({ time, distance: 0 });
-        return;
-      }
-      const [lng2, lat2] = coordinatesLine[indexCoord - 1];
-      const distance = turfDistance([lng2, lat2], [lng1, lat1]);
-      records.push({ time, distance });
-    });
-    records.forEach((_, indexStart) => {
-      if (indexStart > 0) {
-        const timeDiff = timestampToHours(records[indexStart].time - records[indexStart - 1].time);
-        const speed = records[indexStart].distance / timeDiff;
-        if (speed > result.topspeedGPS) result.topspeedGPS = speed;
-      }
-      records.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
-        if (index === 0) return 0;
-        const lengthSum = lengthTotal + distance;
-        const timeDiff = timestampToHours(records[indexStart + index].time - records[indexStart].time);
-        const speed = lengthSum / timeDiff;
-        legLengths.forEach((legLength) => {
-          const legLengthInKM = legLength / 1000;
-          const key = `topspeed${legLength}`;
-          if (lengthTotal < legLengthInKM && lengthSum >= legLengthInKM) {
-            if (speed > result[key]) result[key] = speed;
-          }
-        });
-        return lengthSum;
-      }, 0);
+  // prepare data for measurement
+  const records: Record[] = [];
+  featureEach(geoJson, ({ geometry: { coordinates }, properties: { timestamp, speed } }) => {
+    if (speed !== undefined && speed > geospeedProperties.topspeed) geospeedProperties.topspeed = speed;
+    records.push({
+      timestamp: (new Date(timestamp)).getTime(),
+      distance: turfDistance(coordinates[0], coordinates[1])
     });
   });
-  return result;
+  // measure
+  records.forEach((_, indexStart) => {
+    if (indexStart > 0) {
+      const timeDiff = timestampToHours(records[indexStart].timestamp - records[indexStart - 1].timestamp);
+      const speed = records[indexStart].distance / timeDiff;
+      if (speed > geospeedProperties.topspeedGPS) geospeedProperties.topspeedGPS = speed;
+    }
+    records.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
+      if (index === 0) return 0;
+      const lengthSum = lengthTotal + distance;
+      const timeDiff = timestampToHours(records[indexStart + index].timestamp - records[indexStart].timestamp);
+      const speed = lengthSum / timeDiff;
+      legLengths.forEach((legLength) => {
+        const legLengthInKM = legLength / 1000;
+        if (lengthTotal < legLengthInKM && lengthSum >= legLengthInKM) {
+          const geospeedPropertyKey = `topspeed${legLength}` as keyof GeospeedProperties;
+          const geospeedProperty = geospeedProperties[geospeedPropertyKey] as number;
+          if (speed > geospeedProperty) geospeedProperties[geospeedPropertyKey] = speed;
+        }
+      });
+      return lengthSum;
+    }, 0);
+  });
+  // create GeoSpeed GeoJSON
+  const geoJsonResult = geoJson as GeospeedFeatureCollection;
+  geoJsonResult.properties = geospeedProperties;
+  return geoJsonResult;
 }
 
-function handler(geoJSON: SurflogFeature): SurflogResult {
-  return geospeed(geoJSON);
+function handler(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>) {
+  return geospeed(geoJson);
 }
 
 export default handler;

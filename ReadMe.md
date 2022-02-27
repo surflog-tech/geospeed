@@ -11,7 +11,6 @@ Given GeoJSON it will measure:
 ToDo:
 
 - legs: Number of rides forth and back
-- jibespeed: Fastest turn
 - planing: Time planing in % (> 18 km/h)
 
-It needs time, which there is not a standard way to define in [GeoJSON](https://datatracker.ietf.org/doc/html/rfc7946), thus this module expects to find time for each coordinate in `properties.coordsMeta` of a MultiLineString.
+For each position, a `timestamp` property is expected in order to calculate speed between each position.
