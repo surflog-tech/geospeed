@@ -2,6 +2,7 @@ import { FeatureCollection, LineString } from 'geojson';
 import { GeospeedFeatureCollection, GeospeedProperties, SurflogFeatureProperty } from './index.d';
 import { featureEach } from '@turf/meta';
 import turfDistance from '@turf/distance';
+import { getSpeedColor } from './color';
 
 type Record = {
   timestamp: number;
@@ -21,14 +22,16 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
     topspeed250: 0,
     topspeed500: 0
   };
+  const geoJsonResult = geoJson as GeospeedFeatureCollection;
   // prepare data for measurement
   const records: Record[] = [];
-  featureEach(geoJson, ({ geometry: { coordinates }, properties: { timestamp, speed } }) => {
+  featureEach(geoJson, ({ geometry: { coordinates }, properties: { timestamp, speed } }, featureIndex) => {
     if (speed !== undefined && speed > geospeedProperties.topspeed) geospeedProperties.topspeed = speed;
     records.push({
       timestamp: (new Date(timestamp)).getTime(),
       distance: turfDistance(coordinates[0], coordinates[1])
     });
+    geoJsonResult.features[featureIndex].properties.colorSpeed = getSpeedColor(speed);
   });
   // measure
   records.forEach((_, indexStart) => {
@@ -53,9 +56,11 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
       return lengthSum;
     }, 0);
   });
-  // create GeoSpeed GeoJSON
-  const geoJsonResult = geoJson as GeospeedFeatureCollection;
-  geoJsonResult.properties = geospeedProperties;
+  // set GeoSpeed properties
+  geoJsonResult.properties = {
+    ...geoJsonResult.properties,
+    ...geospeedProperties
+  };
   return geoJsonResult;
 }
 

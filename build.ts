@@ -1,4 +1,5 @@
 import { build, BuildOptions }  from 'esbuild';
+import { nodeExternalsPlugin } from 'esbuild-node-externals';
 
 const options: BuildOptions = {
   outdir: 'lib',
@@ -6,6 +7,7 @@ const options: BuildOptions = {
   platform: 'node',
   minify: true,
   sourcemap: true,
+  plugins: [nodeExternalsPlugin()],
 };
 
 void build({
