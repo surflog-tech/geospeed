@@ -18,7 +18,7 @@
     "test": "mocha",
     "prebuild": "rm -f lib/*",
     "build": "ts-node build.ts",
-    "predeploy": "npm run build && npm run ts-types && npm version patch",
+    "predeploy": "npm run build && npm version patch",
     "deploy": "npm publish"
   },
   "dependencies": {
