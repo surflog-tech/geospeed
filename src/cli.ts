@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises';
 import geoSpeed from './index';
 
 function handler(filePath: string): Promise<void> {
-  return readFile(filePath).then(parseGeoBuffer).then(geoSpeed).then(console.log);
+  return readFile(filePath).then(parseGeoBuffer).then(geoSpeed).then(JSON.stringify).then(console.log);
 }
 
 const [,,geoFile] = process.argv;
