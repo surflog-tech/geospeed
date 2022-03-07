@@ -25,20 +25,24 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
   const geoJsonResult = geoJson as GeospeedFeatureCollection;
   // prepare data for measurement
   const records: Record[] = [];
-  featureEach(geoJson, ({ geometry: { coordinates }, properties: { timestamp, speed } }, featureIndex) => {
+  featureEach(geoJson, ({ geometry: { coordinates }, properties: { timestamp, speed } }) => {
     if (speed !== undefined && speed > geospeedProperties.topspeed) geospeedProperties.topspeed = speed;
     records.push({
       timestamp: (new Date(timestamp)).getTime(),
-      distance: turfDistance(coordinates[0], coordinates[1])
+      distance: turfDistance(coordinates[0], coordinates[1]),
     });
-    geoJsonResult.features[featureIndex].properties.colorSpeed = getSpeedColor(speed);
   });
   // measure
-  records.forEach((_, indexStart) => {
+  for (const [indexStart, { timestamp, distance }] of records.entries()) {
+    const speedFromDevice = geoJson.features[indexStart].properties.speed;
     if (indexStart > 0) {
-      const timeDiff = timestampToHours(records[indexStart].timestamp - records[indexStart - 1].timestamp);
-      const speed = records[indexStart].distance / timeDiff;
+      const timeDiff = timestampToHours(timestamp - records[indexStart - 1].timestamp);
+      const speed = distance / timeDiff;
+      geoJsonResult.features[indexStart].properties.speedGPS = speed;
+      geoJsonResult.features[indexStart].properties.colorSpeed = getSpeedColor(speedFromDevice ?? speed);
       if (speed > geospeedProperties.topspeedGPS) geospeedProperties.topspeedGPS = speed;
+    } else {
+      geoJsonResult.features[indexStart].properties.colorSpeed = getSpeedColor(speedFromDevice);
     }
     records.slice(indexStart).reduce((lengthTotal, { distance }, index) => {
       if (index === 0) return 0;
@@ -55,7 +59,7 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
       });
       return lengthSum;
     }, 0);
-  });
+  }
   // set GeoSpeed properties
   geoJsonResult.properties = {
     ...geoJsonResult.properties,

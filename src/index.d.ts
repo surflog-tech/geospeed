@@ -7,6 +7,7 @@ export type SurflogFeatureProperty = {
 
 export interface GeospeedFeatureProperty extends SurflogFeatureProperty {
   colorSpeed: string;
+  speedGPS: number;
 }
 
 export type GeospeedProperties = {
