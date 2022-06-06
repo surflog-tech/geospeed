@@ -19,6 +19,7 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
   const geospeedProperties: GeospeedProperties = {
     topspeed: 0,
     topspeedGPS: 0,
+    topspeedGPS2Sec: 0,
     topspeed250: 0,
     topspeed500: 0
   };
@@ -32,6 +33,17 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
       distance: turfDistance(coordinates[0], coordinates[1]),
     });
   });
+  // fastest speed during 2 seconds
+  records.reduce((indexPointer, { timestamp }, index, array) => {
+    const { timestamp: timestampPrevious } = array[indexPointer];
+    const timeDiffMS = timestamp - timestampPrevious;
+    if (timeDiffMS < 2000) return indexPointer;
+    const distanceTotal = array.slice(indexPointer, index).reduce((distanceSum, { distance }) => distanceSum + distance, 0);
+    const timeDiff = timestampToHours(timeDiffMS);
+    const speed = distanceTotal / timeDiff;
+    if (speed > geospeedProperties.topspeedGPS2Sec) geospeedProperties.topspeedGPS2Sec = speed;
+    return index;
+  }, 0);
   // measure
   for (const [indexStart, { timestamp, distance }] of records.entries()) {
     const speedFromDevice = geoJson.features[indexStart].properties.speed;

@@ -13,6 +13,7 @@ export interface GeospeedFeatureProperty extends SurflogFeatureProperty {
 export type GeospeedProperties = {
   topspeed: number; // fastest speed
   topspeedGPS: number; // fastest speed measured
+  topspeedGPS2Sec: number; // fastest 2sec speed measured
   topspeed250?: number; // fastest speed measured over 250 meter
   topspeed500?: number; // fastest speed measured over 500 meter
   legs?: number; // number of rides forth and back
