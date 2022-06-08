@@ -3,6 +3,7 @@ import { GeospeedFeatureCollection, GeospeedProperties, SurflogFeatureProperty }
 import { featureEach } from '@turf/meta';
 import turfDistance from '@turf/distance';
 import { getSpeedColor } from './color';
+import { outlierFilter } from './outliers';
 
 type Record = {
   timestamp: number;
@@ -25,14 +26,16 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
   };
   const geoJsonResult = geoJson as GeospeedFeatureCollection;
   // prepare data for measurement
-  const records: Record[] = [];
+  const recordsUnfiltered: Record[] = [];
   featureEach(geoJson, ({ geometry: { coordinates }, properties: { timestamp, speed } }) => {
     if (speed !== undefined && speed > geospeedProperties.topspeed) geospeedProperties.topspeed = speed;
-    records.push({
+    recordsUnfiltered.push({
       timestamp: (new Date(timestamp)).getTime(),
       distance: turfDistance(coordinates[0], coordinates[1]),
     });
   });
+  // remove outliers
+  const records = outlierFilter(recordsUnfiltered, 'distance');
   // fastest speed during 2 seconds
   records.reduce((indexPointer, { timestamp }, index, array) => {
     const { timestamp: timestampPrevious } = array[indexPointer];
