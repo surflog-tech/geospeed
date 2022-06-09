@@ -38,13 +38,17 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
   const records = outlierFilter(recordsUnfiltered, 'distance');
   // fastest speed during 2 seconds
   records.reduce((indexPointer, { timestamp }, index, array) => {
+    if (index === 0) return index;
     const { timestamp: timestampPrevious } = array[indexPointer];
     const timeDiffMS = timestamp - timestampPrevious;
     if (timeDiffMS < 2000) return indexPointer;
-    const distanceTotal = array.slice(indexPointer, index).reduce((distanceSum, { distance }) => distanceSum + distance, 0);
+    if (timeDiffMS > 2000) return index;
+    const distanceTotal = array.slice(indexPointer + 1, index + 1).reduce((distanceSum, { distance }) => distanceSum + distance, 0);
     const timeDiff = timestampToHours(timeDiffMS);
     const speed = distanceTotal / timeDiff;
-    if (speed > geospeedProperties.topspeedGPS2Sec) geospeedProperties.topspeedGPS2Sec = speed;
+    if (speed > geospeedProperties.topspeedGPS2Sec) {
+      geospeedProperties.topspeedGPS2Sec = speed;
+    }
     return index;
   }, 0);
   // measure
