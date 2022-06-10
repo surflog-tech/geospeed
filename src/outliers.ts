@@ -1,3 +1,6 @@
+// https://towardsdatascience.com/why-1-5-in-iqr-method-of-outlier-detection-5d07fdc82097
+const scale = 1.5;
+
 function sortAscending(a: number, b: number) {
   return a - b;
 }
@@ -9,11 +12,11 @@ function median(array: number[]) {
 }
 
 // compute the interquartile range for a sorted array of values
-function interquartile(array: number[], g = 1.5) {
+function interquartile(array: number[]) {
   const length = array.length;
   const q1 = median(array.slice(0, Math.trunc((length / 2))));
   const q3 = median(array.slice(Math.ceil(length / 2)));
-  return (q3 - q1) * g;
+  return (q3 - q1) * scale;
 }
 
 // filter out outliers from an array
