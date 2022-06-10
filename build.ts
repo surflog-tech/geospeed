@@ -6,7 +6,6 @@ const options: BuildOptions = {
   bundle: true,
   platform: 'node',
   minify: true,
-  sourcemap: true,
   plugins: [nodeExternalsPlugin()],
 };
 
