@@ -1,7 +1,7 @@
 // import assert from 'assert';
 import { readFileSync } from 'fs';
-import parseGeoBuffer from './parse';
-import handler from './index';
+import parseGeoBuffer from '../src/parse';
+import handler from '../src/index';
 
 function readFile(filePath: string) {
   return parseGeoBuffer(readFileSync(filePath));
