@@ -30,20 +30,20 @@
     "chroma-js": "2.4.2"
   },
   "devDependencies": {
-    "@tsconfig/node14": "1.0.2",
+    "@tsconfig/node14": "1.0.3",
     "@turf/destination": "6.5.0",
     "@turf/random": "6.5.0",
     "@types/chroma-js": "2.1.3",
     "@types/geojson": "7946.0.8",
     "@types/mocha": "9.1.1",
-    "@typescript-eslint/eslint-plugin": "5.27.1",
-    "@typescript-eslint/parser": "5.27.1",
-    "esbuild": "0.14.43",
+    "@typescript-eslint/eslint-plugin": "5.28.0",
+    "@typescript-eslint/parser": "5.28.0",
+    "esbuild": "0.14.45",
     "esbuild-node-externals": "1.4.1",
-    "eslint": "8.17.0",
+    "eslint": "8.18.0",
     "mocha": "10.0.0",
     "ts-node": "10.8.1",
-    "typescript": "4.7.3"
+    "typescript": "4.7.4"
   },
   "repository": "https://github.com/surflog-tech/geospeed",
   "bugs": {
