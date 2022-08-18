@@ -8,9 +8,10 @@ import { outlierFilter } from './outliers';
 type Record = {
   timestamp: number;
   distance: number;
+  speed?: number;
 }
 
-const legLengths = [250, 500];
+const legLengths = [100, 250, 500];
 
 function timestampToHours(ts: number) {
   return ts / 1000 / 60 / 60;
@@ -21,6 +22,8 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
     topspeed: 0,
     topspeedGPS: 0,
     topspeedGPS2Sec: 0,
+    topspeedDevice2Sec: 0,
+    topspeed100: 0,
     topspeed250: 0,
     topspeed500: 0
   };
@@ -32,22 +35,28 @@ function geospeed(geoJson: FeatureCollection<LineString, SurflogFeatureProperty>
     recordsUnfiltered.push({
       timestamp: (new Date(timestamp)).getTime(),
       distance: turfDistance(coordinates[0], coordinates[1]),
+      speed,
     });
   });
   // remove outliers
   const records = outlierFilter(recordsUnfiltered, 'distance');
   // fastest speed during 2 seconds
-  records.reduce((indexPointer, { timestamp }, index, array) => {
+  records.reduce((indexPointer, { timestamp, speed }, index, array) => {
     if (index === 0) return index;
     const { timestamp: timestampPrevious } = array[indexPointer];
+    const { speed: speedPrevious } = array[indexPointer];
     const timeDiffMS = timestamp - timestampPrevious;
     if (timeDiffMS < 2000) return indexPointer;
     if (timeDiffMS > 2000) return index;
     const distanceTotal = array.slice(indexPointer + 1, index + 1).reduce((distanceSum, { distance }) => distanceSum + distance, 0);
     const timeDiff = timestampToHours(timeDiffMS);
-    const speed = distanceTotal / timeDiff;
-    if (speed > geospeedProperties.topspeedGPS2Sec) {
-      geospeedProperties.topspeedGPS2Sec = speed;
+    const speedGPS = distanceTotal / timeDiff;
+    if (speedGPS > geospeedProperties.topspeedGPS2Sec) {
+      geospeedProperties.topspeedGPS2Sec = speedGPS;
+    }
+    const speedDevice = (Number(speedPrevious) + Number(speed)) / 2;
+    if (speedDevice > geospeedProperties.topspeedDevice2Sec) {
+      geospeedProperties.topspeedDevice2Sec = speedDevice;
     }
     return index;
   }, 0);
